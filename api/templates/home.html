@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Name Jordax: System Infiltration</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        #content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+        }
+        #welcome-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+        #terminal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        #output {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        #input-line {
+            display: flex;
+            align-items: center;
+        }
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        #input-text {
+            background-color: transparent;
+            border: none;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            outline: none;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-bg"></canvas>
+    <div id="content">
+        <div id="welcome-message">Welcome to Code Name Jordax</div>
+        <div id="terminal">
+            <div id="output"></div>
+            <div id="input-line">
+                <span class="blink">></span> <span id="input-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix rain animation
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+        const columns = canvas.width / 20;
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#0f0';
+            ctx.font = '15px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * 20, drops[i] * 20);
+                if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Terminal functionality
+        const output = document.getElementById('output');
+        const inputText = document.getElementById('input-text');
+        const terminal = document.getElementById('terminal');
+        const welcomeMessage = document.getElementById('welcome-message');
+        let currentInput = '';
+
+        const commands = {
+            help: "Available commands: help, clear, echo, whoami",
+            clear: () => output.innerHTML = '',
+            echo: (args) => args.join(' '),
+            whoami: "Agent of Jordax"
+        };
+
+        function processCommand(input) {
+            const [command, ...args] = input.trim().split(' ');
+            const result = commands[command];
+
+            if (result) {
+                return typeof result === 'function' ? result(args) : result;
+            } else {
+                return `Command not found: ${command}. Type 'help' for available commands.`;
+            }
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                output.innerHTML += `> ${currentInput}\n`;
+                const result = processCommand(currentInput);
+                output.innerHTML += result + '\n';
+                currentInput = '';
+                inputText.textContent = '';
+                terminal.scrollTop = terminal.scrollHeight;
+            } else if (event.key === 'Backspace') {
+                currentInput = currentInput.slice(0, -1);
+                inputText.textContent = currentInput;
+            } else if (event.key.length === 1) {
+                currentInput += event.key;
+                inputText.textContent = currentInput;
+            }
+        });
+
+        // Initialization sequence
+        function init() {
+            setInterval(drawMatrix, 50);
+            setTimeout(() => {
+                welcomeMessage.style.opacity = '1';
+                setTimeout(() => {
+                    welcomeMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        welcomeMessage.style.display = 'none';
+                        terminal.style.display = 'block';
+                        output.innerHTML = "Jordax Terminal Activated. Type 'help' for available commands.\n";
+                    }, 2000);
+                }, 3000);
+            }, 1000);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
