@@ -1,0 +1,15 @@
+# Web framework
+fastapi
+
+# ASGI server
+uvicorn
+
+# AI/ML
+langchain
+langchain_openai
+
+# Environment variables
+python-dotenv
+
+# Templating
+jinja2
