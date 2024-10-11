@@ -87,7 +87,6 @@
     </div>
 
     <script>
-        // Matrix rain animation
         const canvas = document.getElementById('matrix-bg');
         const ctx = canvas.getContext('2d');
 
@@ -121,7 +120,6 @@
             }
         }
 
-        // Terminal functionality
         const output = document.getElementById('output');
         const inputText = document.getElementById('input-text');
         const terminal = document.getElementById('terminal');
@@ -129,27 +127,42 @@
         let currentInput = '';
 
         const commands = {
-            help: "Available commands: help, clear, echo, whoami",
+            help: "Available commands: help, clear, echo, whoami, chat",
             clear: () => output.innerHTML = '',
             echo: (args) => args.join(' '),
-            whoami: "Agent of Jordax"
+            whoami: "Agent of Jordax",
+            chat: async (args) => {
+                const message = args.join(' ');
+                try {
+                    const response = await fetch(`/chat?message=${encodeURIComponent(message)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                    const data = await response.json();
+                    return `AI: ${data.response}`;
+                } catch (error) {
+                    return `Error: ${error.message}`;
+                }
+            }
         };
 
-        function processCommand(input) {
+        async function processCommand(input) {
             const [command, ...args] = input.trim().split(' ');
             const result = commands[command];
 
             if (result) {
-                return typeof result === 'function' ? result(args) : result;
+                return typeof result === 'function' ? await result(args) : result;
             } else {
                 return `Command not found: ${command}. Type 'help' for available commands.`;
             }
         }
 
-        document.addEventListener('keydown', (event) => {
+        document.addEventListener('keydown', async (event) => {
             if (event.key === 'Enter') {
                 output.innerHTML += `> ${currentInput}\n`;
-                const result = processCommand(currentInput);
+                const result = await processCommand(currentInput);
                 output.innerHTML += result + '\n';
                 currentInput = '';
                 inputText.textContent = '';
@@ -163,7 +176,6 @@
             }
         });
 
-        // Initialization sequence
         function init() {
             setInterval(drawMatrix, 50);
             setTimeout(() => {

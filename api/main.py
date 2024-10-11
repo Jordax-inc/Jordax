@@ -1,6 +1,8 @@
 from api import app
 from .routes import home
+from dotenv import load_dotenv
 
+load_dotenv()
 app.include_router(home.router)
 
 if __name__ == "__main__":
