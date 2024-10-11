@@ -14,6 +14,7 @@ Jordax is a TODO.
 Follow these steps to set up the Jordax project environment:
 
 1. Ensure you have Python installed on your system (Python 3.7 or higher is recommended).
+https://www.python.org/downloads/
 
 2. Clone this repository to your local machine:
    ```
