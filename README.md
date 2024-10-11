@@ -25,13 +25,13 @@ https://www.python.org/downloads/
 3. Create a virtual environment:
    - On Windows:
      ```
-     python -m venv venv
-     venv\Scripts\activate
+     python -m venv .venv
+     .venv\Scripts\activate.bat
      ```
    - On macOS or Linux:
      ```
-     python3 -m venv venv
-     source venv/bin/activate
+     python3 -m venv .venv
+     source .venv/bin/activate
      ```
 
 4. Install the required dependencies:
